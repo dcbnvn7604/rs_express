@@ -24,9 +24,13 @@ export class User {
 
   static async authenticate(username, password) {
     let collection = await User.getCollection();
-    let cursor = collection.find({username, password})
+    let cursor = collection.find({username})
     if(await cursor.hasNext()) {
-      return await cursor.next();
+      let user = await cursor.next();
+      let match = await bcrypt.compare(password, user.password);
+      if (match) {
+        return user;
+      }
     }
     throw new UnauthenticateException();
   }

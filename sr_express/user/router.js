@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { getLogin, getRegister, postRegister } from './view.js';
-import { register } from './validator.js';
+import { getLogin, postLogin, getRegister, postRegister } from './view.js';
+import { register, login } from './validator.js';
 import { handleError } from '../util.js';
 
 const router = Router();
@@ -9,5 +9,6 @@ const router = Router();
 export default router
 
 router.get('/login', getLogin);
+router.post('/login', login, handleError(postLogin));
 router.get('/register', getRegister);
 router.post('/register', register, handleError(postRegister));

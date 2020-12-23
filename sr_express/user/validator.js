@@ -1,11 +1,23 @@
 import { checkSchema } from 'express-validator';
-export var register = checkSchema({
+
+export const login = checkSchema({
   username: {
-    in: ['body'],
+    in: 'body',
     exists: true
   },
   password: {
-    in: ['body'],
+    in: 'body',
+    exists: true
+  }
+});
+
+export const register = checkSchema({
+  username: {
+    in: 'body',
+    exists: true
+  },
+  password: {
+    in: 'body',
     exists: true,
   },
   repassword: {
