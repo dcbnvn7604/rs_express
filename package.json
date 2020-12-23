@@ -1,0 +1,37 @@
+{
+  "name": "sr_express",
+  "version": "1.0.0",
+  "description": "sr",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "express-validator": "^6.8.0",
+    "hbs": "^4.1.1",
+    "mongodb": "^3.6.3"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1",
+    "node-mocks-http": "^1.9.0",
+    "supertest": "^6.0.1"
+  },
+  "scripts": {
+    "test": "mocha --recursive --require test/set_up.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcbnvn7604/sr_express.git"
+  },
+  "keywords": [
+    "sr",
+    "express"
+  ],
+  "author": "FalforChale",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dcbnvn7604/sr_express/issues"
+  },
+  "homepage": "https://github.com/dcbnvn7604/sr_express#readme"
+}

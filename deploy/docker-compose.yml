@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  express:
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+    volumes:
+      - ../:/app
+    environment:
+      SR_SECRET: sr_secret
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: abc@1234
+      MONGO_HOST: mongo
+      MONGO_DATABASE: express
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:4.4.2-bionic
+    volumes:
+      - ../../express-mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: abc@1234
