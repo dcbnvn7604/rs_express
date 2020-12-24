@@ -45,9 +45,8 @@ describe('user view', () => {
   });
 
   it('post authenticate no user', async () => {
-    const app = createApp();
-    
     await initializeDb();
+    const app = createApp();
 
     await sendData(
       request(app).post('/user/login'),
@@ -56,11 +55,10 @@ describe('user view', () => {
   });
 
   it('post authenticate', async () => {
-    const app = createApp();
-
     await initializeDb();
-
     await User.create('username1', 'password1');
+
+    const app = createApp();
 
     await sendData(
       request(app).post('/user/login'),
@@ -96,10 +94,10 @@ describe('user view', () => {
   });
 
   it ('post register exists', async () => {
-    const app = createApp();
     await initializeDb();
-
     await User.create('username1', 'username1');
+
+    const app = createApp();
 
     await sendData(
       request(app)
@@ -109,8 +107,8 @@ describe('user view', () => {
   });
 
   it('post register', async () => {
-    const app = createApp();
     await initializeDb();
+    const app = createApp();
 
     await sendData(
       request(app)

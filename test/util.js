@@ -21,3 +21,10 @@ export var sendData = function(request, data) {
   }
   return _request
 };
+
+export var setLogin = function(user) {
+  return async function(req, res, next) {
+    req.session.username = user.username;
+    next();
+  };
+}

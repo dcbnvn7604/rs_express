@@ -14,7 +14,8 @@ export async function postLogin(req, res, next) {
     return;
   }
   try {
-    await User.authenticate(req.body.username, req.body.password);
+    let user = await User.authenticate(req.body.username, req.body.password);
+    req.session.username = user.username;
     res.redirect('../login');
   } catch(e) {
     if (e instanceof UnauthenticateException) {

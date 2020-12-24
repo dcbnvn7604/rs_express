@@ -3,14 +3,18 @@ import session from 'express-session';
 
 import db from './db.js';
 import userRouter from './user/router.js';
+import entryRouter from './entry/router.js';
 
-export default function createApp() {
+export default function createApp(middlewares=[]) {
   const app = express();
 
   db.init(process.env.MONGO_HOST, process.env.MONGO_DATABASE, process.env.MONGO_USERNAME, process.env.MONGO_PASSWORD);
 
   app.set('view engine', 'hbs');
-  app.set('views', [process.cwd() + '/sr_express/user/templates'])
+  app.set('views', [
+    process.cwd() + '/sr_express/user/templates',
+    process.cwd() + '/sr_express/entry/templates',
+  ])
 
   app.use(session({
     resave: false,
@@ -20,7 +24,13 @@ export default function createApp() {
 
   app.use(express.urlencoded({ extended: true }));
 
-  app.use('/user', userRouter);
+  middlewares.forEach(middleware => {
+    app.use(middleware);
+  });
 
-  return app
+  app.use('/user', userRouter);
+  app.use('/entry', entryRouter);
+
+
+  return app;
 }
