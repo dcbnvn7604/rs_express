@@ -1,4 +1,7 @@
+import mongodb from 'mongodb';
+
 import db from '../db.js';
+import { NotFoundException } from '../exception.js';
 
 export class Entry {
   #id;
@@ -11,12 +14,21 @@ export class Entry {
     this.#content = content;
   }
 
+  get id() {
+    return this.#id;
+  }
+
   get title() {
     return this.#title;
   }
 
   get content() {
     return this.#content;
+  }
+
+  async update(title, content) {
+    let collection = await Entry.getCollection();
+    await collection.updateOne({_id: this.#id}, {$set: {title, content}});
   }
 
   static async getCollection() {
@@ -36,9 +48,17 @@ export class Entry {
     if (query) {
       condition = {$or: [{title: reQuey}, {content: reQuey}]};
     }
-    let out = await collection.find(condition).toArray();
     return (await collection.find(condition).toArray()).map((entry) => {
       return new Entry(entry._id, entry.title, entry.content);
     });
+  }
+
+  static async byId(id) {
+    let collection = await Entry.getCollection();
+    let entry = await collection.findOne({_id: mongodb.ObjectId(id)});
+    if (!entry) {
+      throw new NotFoundException();
+    }
+    return new Entry(entry._id, entry.title, entry.content);
   }
 };

@@ -31,6 +31,12 @@ describe('entry/view no login', () => {
       .post('/entry/create')
       .expect(302);
   });
+
+  it('get update', async () => {
+    await request(app)
+      .get('/entry/1/update')
+      .expect(302);
+  });
 });
 
 describe('entry/view no permission', () => {
@@ -60,14 +66,20 @@ describe('entry/view no permission', () => {
       .post('/entry/create')
       .expect(403);
   });
+
+  it('get update', async () => {
+    await request(app)
+      .get('/entry/1/update')
+      .expect(403);
+  });
 });
 
-describe('entry/view', () => {
+describe('entry/view/create', () => {
   let app;
   let entry = {
     title: 'title1',
     content: 'content1'
-  }
+  };
 
   beforeEach(async () => {
     await initializeDb();
@@ -77,13 +89,13 @@ describe('entry/view', () => {
     app = createApp([setLogin(user)]);
   });
 
-  it('get create', async () => {
+  it('get', async () => {
     await request(app)
       .get('/entry/create')
       .expect(200);
   });
 
-  it('post create no title', async () => {
+  it('post no title', async () => {
     let data = generateData(entry, ['title']);
     await sendData(
       request(app)
@@ -92,7 +104,7 @@ describe('entry/view', () => {
     ).expect(200);
   });
 
-  it('post create no content', async () => {
+  it('post no content', async () => {
     let data = generateData(entry, ['content']);
     await sendData(
       request(app)
@@ -101,7 +113,7 @@ describe('entry/view', () => {
     ).expect(200);
   });
 
-  it('post create', async () => {
+  it('post', async () => {
     await sendData(
       request(app)
         .post('/entry/create'),
@@ -109,5 +121,70 @@ describe('entry/view', () => {
     ).expect(302);
 
     assert.equal((await Entry.search()).length, 1);
+  });
+});
+
+describe('entry/view/update', () => {
+  let app;
+  let user;
+  let entry = {
+    title: 'title1',
+    content: 'content1'
+  };
+
+  beforeEach(async () => {
+    await initializeDb();
+    user = await User.create('username1', 'username1');
+    await user.addPermissions(['entry.update']);
+
+    app = createApp([setLogin(user)]);
+  });
+
+  it('get no exists', async () => {
+    await request(app)
+      .get('/entry/123456789012/update')
+      .expect(404);
+  });
+
+  it('get', async () => {
+    let entry = await Entry.create('title1', 'content1', user);
+    await request(app)
+      .get(`/entry/${entry.id}/update`)
+      .expect(200);
+  });
+
+  it('post no title', async () => {
+    let data = generateData(entry, ['title']);
+    await sendData(
+      request(app)
+        .post('/entry/1/update'),
+      data
+    ).expect(200);
+  });
+
+  it('post no content', async () => {
+    let data = generateData(entry, ['content']);
+    await sendData(
+      request(app)
+        .post('/entry/1/update'),
+      data
+    ).expect(200);
+  });
+
+  it('post no exists', async () => {
+    await sendData(
+      request(app)
+        .post('/entry/123456789012/update'),
+      entry
+    ).expect(404);
+  });
+
+  it('post', async () => {
+    let _entry = await Entry.create('title2', 'content2', user);
+    await sendData(
+      request(app)
+        .post(`/entry/${_entry.id}/update`),
+      entry
+    ).expect(302);
   });
 });
