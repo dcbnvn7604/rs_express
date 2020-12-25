@@ -5,7 +5,9 @@ import { sendData, generateData } from '../util.js';
 import { initializeDb } from '../db.js';
 import { User } from '../../sr_express/user/model.js';
 
-describe('user view', () => {
+describe('user/view', () => {
+  let app;
+
   let register = {
     username: 'username1',
     password: 'password1',
@@ -17,15 +19,17 @@ describe('user view', () => {
     password: 'password1',
   };
 
+  before(() => {
+    app = createApp();
+  });
+
   it('authenticate', async () => {
-    const app = createApp();
     await request(app)
       .get('/user/login')
       .expect(200);
   });
 
   it('post authenticate no username', async () => {
-    const app = createApp();
     let data = generateData(login, ['username']);
 
     await sendData(
@@ -35,7 +39,6 @@ describe('user view', () => {
   });
 
   it('post authenticate no password', async () => {
-    const app = createApp();
     let data = generateData(login, ['password']);
 
     await sendData(
@@ -46,7 +49,6 @@ describe('user view', () => {
 
   it('post authenticate no user', async () => {
     await initializeDb();
-    const app = createApp();
 
     await sendData(
       request(app).post('/user/login'),
@@ -67,14 +69,12 @@ describe('user view', () => {
   });
 
   it('register', async () => {
-    const app = createApp();
     await request(app)
       .get('/user/register')
       .expect(200);
   });
 
   it('post register no username', async () => {
-    const app = createApp();
     let data = generateData(register, ['username']);
     await sendData(
       request(app)
@@ -84,7 +84,6 @@ describe('user view', () => {
   });
 
   it ('post register no password', async () => {
-    const app = createApp();
     let data = generateData(register, ['password']);
     await sendData(
       request(app)
@@ -97,8 +96,6 @@ describe('user view', () => {
     await initializeDb();
     await User.create('username1', 'username1');
 
-    const app = createApp();
-
     await sendData(
       request(app)
         .post('/user/register'),
@@ -108,7 +105,6 @@ describe('user view', () => {
 
   it('post register', async () => {
     await initializeDb();
-    const app = createApp();
 
     await sendData(
       request(app)

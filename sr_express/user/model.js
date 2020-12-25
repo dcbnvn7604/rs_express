@@ -8,10 +8,12 @@ const SALT_ROUND = 10;
 export class User {
   #id;
   #username;
+  #permissions;
 
-  constructor(id, username) {
+  constructor(id, username, permissions=[]) {
     this.#id = id;
     this.#username = username;
+    this.#permissions = permissions;
   }
 
   get id() {
@@ -20,6 +22,17 @@ export class User {
 
   get username() {
     return this.#username;
+  }
+
+  hasPermissions(permissions) {
+    return permissions.every(permission => this.#permissions.includes(permission));
+  }
+
+  async addPermissions(permissions) {
+    this.#permissions = Array.from(new Set(this.#permissions.concat(permissions)));
+
+    let collection = await User.getCollection();
+    await collection.updateOne({_id: this.#id}, {$set: {permissions: this.#permissions}});
   }
 
   static async initialize() {
@@ -43,7 +56,7 @@ export class User {
       let user = await cursor.next();
       let match = await bcrypt.compare(password, user.password);
       if (match) {
-        return new User(user._id, user.username);
+        return new User(user._id, user.username, user.permissions);
       }
     }
     throw new UnauthenticateException();
@@ -56,6 +69,12 @@ export class User {
       username,
       password: hashed
     });
-    return new User(result.insertedId, username);
+    return new User(result.insertedId, username, []);
+  }
+
+  static async byUsername(username) {
+    let collection = await User.getCollection();
+    let user = await collection.findOne({username});
+    return new User(user._id, user.username, user.permissions);
   }
 }

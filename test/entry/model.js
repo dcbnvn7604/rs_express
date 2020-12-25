@@ -1,13 +1,11 @@
 import assert from 'assert';
 
-import createApp from '../../sr_express/createApp.js';
 import { Entry } from '../../sr_express/entry/model.js';
 import { User } from '../../sr_express/user/model.js';
 import { initializeDb } from '../db.js';
 
 describe('entry model', () => {
   it('search', async () => {
-    createApp();
     await initializeDb();
 
     let user = await User.create('username1', 'password1');

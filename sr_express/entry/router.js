@@ -1,11 +1,14 @@
 import { Router } from 'express';
 
-import { listEntry } from './view.js';
+import { listEntry, getCreateEntry,  postCreateEntry} from './view.js';
 import { handleError } from '../util.js';
-import { required_login } from '../user/util.js';
+import { requiredLogin, hasPermissions } from '../user/util.js';
+import { create } from './validator.js';
 
 const router = new Router();
 
 export default router;
 
-router.get('/list', required_login, handleError(listEntry));
+router.get('/list', requiredLogin, handleError(listEntry));
+router.get('/create', [requiredLogin, hasPermissions(['entry.create'])], getCreateEntry);
+router.post('/create', [requiredLogin, hasPermissions(['entry.create']), create], handleError(postCreateEntry));
