@@ -1,11 +1,11 @@
 import request from 'supertest';
 
 import createApp from '../../sr_express/createApp.js';
-import { sendData, generateData } from '../util.js';
+import { sendData, generateData, setLogin } from '../util.js';
 import { initializeDb } from '../db.js';
 import { User } from '../../sr_express/user/model.js';
 
-describe('user/view', () => {
+describe('user/view no login', () => {
   let app;
 
   let register = {
@@ -60,12 +60,17 @@ describe('user/view', () => {
     await initializeDb();
     await User.create('username1', 'password1');
 
-    const app = createApp();
-
     await sendData(
       request(app).post('/user/login'),
       login
     ).expect(302);
+  });
+
+  it('post logout no login', async () => {
+    await initializeDb();
+
+    await request(app).post('/user/logout')
+      .expect(302);
   });
 
   it('register', async () => {
@@ -111,5 +116,21 @@ describe('user/view', () => {
         .post('/user/register'),
       register
     ).expect(302);
+  });
+});
+
+describe('user/view', () => {
+  let app;
+
+  before(async () => {
+    await initializeDb();
+    let user = await User.create('username1', 'username1');
+
+    app = createApp([setLogin(user)]);
+  });
+
+  it('post logout', async () => {
+    await request(app).post('/user/logout')
+      .expect(302);
   });
 });

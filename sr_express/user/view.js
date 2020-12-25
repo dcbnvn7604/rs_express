@@ -26,6 +26,15 @@ export async function postLogin(req, res, next) {
   }
 }
 
+export async function postLogout(req, res, next) {
+  await new Promise((resolve) => {
+    req.session.destroy(() => {
+      resolve();
+    });
+  });
+  res.redirect('../login');
+}
+
 export async function getRegister(req, res, next) {
   res.render('register');
 }
