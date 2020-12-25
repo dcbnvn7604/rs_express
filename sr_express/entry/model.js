@@ -31,6 +31,11 @@ export class Entry {
     await collection.updateOne({_id: this.#id}, {$set: {title, content}});
   }
 
+  async delete() {
+    let collection = await Entry.getCollection();
+    await collection.deleteOne({_id: this.#id});
+  }
+
   static async getCollection() {
     return await (await db.getInstance()).collection('entry');
   }

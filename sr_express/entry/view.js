@@ -55,3 +55,17 @@ export async function postUpdateEntry(req, res, next) {
   }
   res.redirect('../list');
 }
+
+export async function postDeleteEntry(req, res, next) {
+  try {
+    let entry = await Entry.byId(req.params.id);
+    await entry.delete();
+  } catch(e) {
+    if (e instanceof NotFoundException) {
+      res.status(404).end();
+      return;
+    }
+    throw e;
+  }
+  res.redirect('../list');
+};
