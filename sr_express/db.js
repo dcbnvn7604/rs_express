@@ -24,6 +24,9 @@ class DB {
   }
 
   async getConnect() {
+    if (!this.#host || !this.#database || !this.#username || !this.#password) {
+      throw Error('DB does not initialized');
+    }
     if (this.#connect === null) {
       this.#connect = await mongodb.MongoClient.connect(
         `mongodb://${encodeURIComponent(this.#username)}:${encodeURIComponent(this.#password)}@${this.#host}/`,

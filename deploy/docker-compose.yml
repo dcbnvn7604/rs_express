@@ -8,7 +8,7 @@ services:
     volumes:
       - ../:/app
     environment:
-      SR_SECRET: sr_secret
+      SR_SECRET: secret12341234567890123456789012
       MONGO_USERNAME: admin
       MONGO_PASSWORD: abc@1234
       MONGO_HOST: mongo

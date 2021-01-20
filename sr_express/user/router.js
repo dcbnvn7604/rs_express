@@ -2,15 +2,18 @@ import { Router } from 'express';
 
 import { getLogin, postLogin, postLogout, getRegister, postRegister } from './view.js';
 import { register, login } from './validator.js';
-import { handleError } from '../util.js';
+import { handleError, handleApiError } from '../util.js';
 import { requiredLogin } from './util.js';
+import { authenticate } from './api.js';
 
-const router = Router();
+export const web = Router();
 
-export default router
+web.get('/login', getLogin);
+web.post('/login', login, handleError(postLogin));
+web.post('/logout', requiredLogin, postLogout);
+web.get('/register', getRegister);
+web.post('/register', register, handleError(postRegister));
 
-router.get('/login', getLogin);
-router.post('/login', login, handleError(postLogin));
-router.post('/logout', requiredLogin, postLogout);
-router.get('/register', getRegister);
-router.post('/register', register, handleError(postRegister));
+export const api = Router();
+
+api.post('/authenticate', login, handleApiError(authenticate));

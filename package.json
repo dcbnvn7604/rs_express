@@ -10,6 +10,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.8.0",
     "hbs": "^4.1.1",
+    "jose": "^3.5.0",
     "mongodb": "^3.6.3"
   },
   "devDependencies": {
