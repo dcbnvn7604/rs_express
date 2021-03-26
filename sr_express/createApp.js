@@ -4,7 +4,7 @@ import session from 'express-session';
 import db from './db.js';
 import generator from './user/token.js';
 import { web as webUserRouter, api as apiUserRouter } from './user/router.js';
-import entryRouter from './entry/router.js';
+import { web as webEntryRouter, api as apiEntryRouter } from './entry/router.js';
 
 export default function createApp(middlewares=[]) {
   const app = express();
@@ -32,9 +32,10 @@ export default function createApp(middlewares=[]) {
   });
 
   app.use('/user', webUserRouter);
-  app.use('/entry', entryRouter);
+  app.use('/entry', webEntryRouter);
 
   app.use('/api/user', apiUserRouter);
+  app.use('/api/entry', apiEntryRouter);
 
   return app;
 }
