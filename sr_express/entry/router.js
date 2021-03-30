@@ -4,7 +4,7 @@ import { listEntry, getCreateEntry,  postCreateEntry, getUpdateEntry, postUpdate
 import { handleError } from '../util.js';
 import { requiredLogin, hasPermissions, requiredToken } from '../user/util.js';
 import { create } from './validator.js';
-import { list } from './api.js';
+import { list as apiList, create as apiCreate } from './api.js';
 
 export const web = new Router();
 
@@ -17,4 +17,5 @@ web.post('/:id/delete', [requiredLogin, hasPermissions(['entry.delete'])], handl
 
 export const api = new Router();
 
-api.get('', requiredToken, list);
+api.get('', requiredToken, apiList);
+api.post('', [requiredToken, hasPermissions(['entry.create']), create], apiCreate);
