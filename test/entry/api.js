@@ -61,6 +61,21 @@ describe('entry/api no token', () => {
       .send(entry)
       .expect(401);
   });
+
+  it('delete', async () => {
+    await request(app)
+      .delete('/api/entry/123456789012')
+      .send(entry)
+      .expect(401);
+  });
+
+  it('delete wrong token', async () => {
+    await request(app)
+      .delete('/api/entry/123456789012')
+      .set('Authorization', 'Bearer token')
+      .send(entry)
+      .expect(401);
+  });
 });
 
 describe('entry/api', () => {
@@ -166,6 +181,32 @@ describe('entry/api', () => {
       .post(`/api/entry/${_entry.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send(entry)
+      .expect(200);
+  });
+
+  it('delete no permission', async () => {
+    await request(app)
+      .delete('/api/entry/123456789012')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(403);
+  });
+
+  it('delete not found', async () => {
+    await user.addPermissions(['entry.delete']);
+
+    await request(app)
+      .delete('/api/entry/123456789012')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(404);
+  });
+
+  it('delete', async () => {
+    await user.addPermissions(['entry.delete']);
+    let _entry = await Entry.create('title2', 'content2', user);
+
+    await request(app)
+      .delete(`/api/entry/${_entry.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
   });
 });

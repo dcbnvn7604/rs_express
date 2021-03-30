@@ -25,10 +25,23 @@ export const update = async (req, res, next) => {
     res.status(400).json(errors.mapped());
   }
 
-  debugger;
   try {
     let entry = await Entry.byId(req.params.id);
     await entry.update(req.body.title, req.body.content);
+  } catch(e) {
+    if (e instanceof NotFoundException) {
+      res.status(404).end();
+      return;
+    }
+    throw e;
+  }
+  res.status(200).end();
+}
+
+export const _delete = async(req, res, next) => {
+  try {
+    let entry = await Entry.byId(req.params.id);
+    await entry.delete();
   } catch(e) {
     if (e instanceof NotFoundException) {
       res.status(404).end();
