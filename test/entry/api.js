@@ -5,6 +5,7 @@ import generator from '../../sr_express/user/token.js';
 import { initializeDb } from '../db.js';
 import { generateData } from '../util.js';
 import { User } from '../../sr_express/user/model.js';
+import { Entry } from '../../sr_express/entry/model.js';
 
 describe('entry/api no token', () => {
   let app;
@@ -41,6 +42,21 @@ describe('entry/api no token', () => {
   it('create wrong token', async () => {
     await request(app)
       .post('/api/entry')
+      .set('Authorization', 'Bearer token')
+      .send(entry)
+      .expect(401);
+  });
+
+  it('update', async () => {
+    await request(app)
+      .post('/api/entry/123456789012')
+      .send(entry)
+      .expect(401);
+  });
+
+  it('update wrong token', async () => {
+    await request(app)
+      .post('/api/entry/123456789012')
       .set('Authorization', 'Bearer token')
       .send(entry)
       .expect(401);
@@ -109,5 +125,47 @@ describe('entry/api', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(entry)
       .expect(201);
+  });
+
+  it('update no permission', async () => {
+    await request(app)
+      .post('/api/entry/123456789012')
+      .set('Authorization', `Bearer ${token}`)
+      .send(entry)
+      .expect(403);
+  });
+
+  it('update validate error', async () => {
+    await user.addPermissions(['entry.update']);
+
+    await request(app)
+      .post('/api/entry/123456789012')
+      .set('Authorization', `Bearer ${token}`)
+      .send(generateData(entry, ['title']))
+      .expect(400)
+      .expect(response => {
+        if (!('title' in  response.body)) throw new Error("title");
+      });
+  });
+
+  it('update not found', async () => {
+    await user.addPermissions(['entry.update']);
+
+    await request(app)
+      .post('/api/entry/123456789012')
+      .set('Authorization', `Bearer ${token}`)
+      .send(entry)
+      .expect(404);
+  });
+
+  it('update', async () => {
+    await user.addPermissions(['entry.update']);
+    let _entry = await Entry.create('title2', 'content2', user);
+
+    await request(app)
+      .post(`/api/entry/${_entry.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(entry)
+      .expect(200);
   });
 });
